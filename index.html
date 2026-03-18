@@ -13,35 +13,41 @@
             --main-green: #5B6356;
             --btn-gray: #A1A9AF;
             --border-color: #999;
+            /* 全部文字比原本大 4pt，約等於增加 5-6px */
+            --base-font-size: 20px; 
         }
-        body { margin: 0; background-color: var(--bg-color); font-family: sans-serif; display: flex; justify-content: center; }
-        #app { width: 100%; max-width: 450px; padding-bottom: 50px; }
+        body { margin: 0; background-color: var(--bg-color); font-family: sans-serif; display: flex; justify-content: center; font-size: var(--base-font-size); }
+        #app { width: 100%; max-width: 500px; padding-bottom: 50px; }
         
         header { background-color: var(--main-green); color: white; padding: 20px; text-align: center; }
         header img { width: 100%; border-radius: 5px; display: block; }
-        header h2 { margin: 15px 0 0 0; }
+        header h2 { margin: 15px 0 0 0; font-size: 28px; }
 
-        .notice { padding: 20px; font-size: 14px; line-height: 1.8; border-bottom: 1px solid var(--border-color); }
+        .notice { padding: 20px; font-size: 18px; line-height: 1.8; border-bottom: 1px solid var(--border-color); }
         .notice a { color: #2D5A27; text-decoration: underline; font-weight: bold; }
 
-        .section-title { padding: 20px 20px 10px; font-size: 18px; font-weight: bold; }
+        .section-title { padding: 25px 20px 10px; font-size: 24px; font-weight: bold; }
 
-        .btn-grid { display: flex; flex-direction: column; gap: 8px; padding: 0 40px; }
-        .btn-item-wrapper { display: flex; align-items: center; gap: 10px; }
-        .item-btn { flex-grow: 1; background-color: var(--btn-gray); border: 1px solid #888; border-radius: 20px; padding: 12px; color: #333; cursor: pointer; text-align: center; font-weight: bold; }
-        .del-opt { cursor: pointer; color: #777; font-size: 14px; }
+        .btn-grid { display: flex; flex-direction: column; gap: 12px; padding: 0 30px; }
+        .btn-item-wrapper { display: flex; align-items: center; gap: 12px; }
+        .item-btn { flex-grow: 1; background-color: var(--btn-gray); border: 1px solid #888; border-radius: 25px; padding: 15px; color: #333; cursor: pointer; text-align: center; font-weight: bold; font-size: 20px; }
+        .del-opt { cursor: pointer; color: #777; font-size: 18px; padding: 5px; }
 
-        table { width: 95%; margin: 10px auto; border-collapse: collapse; background: rgba(255,255,255,0.2); }
-        th, td { border: 1px solid var(--border-color); padding: 8px; text-align: center; font-size: 14px; }
+        table { width: 95%; margin: 15px auto; border-collapse: collapse; background: rgba(255,255,255,0.2); }
+        th, td { border: 1px solid var(--border-color); padding: 12px; text-align: center; font-size: 18px; }
 
-        .input-group { padding: 10px 40px; display: flex; flex-direction: column; gap: 10px; }
-        input[type="text"], input[type="number"] { border-radius: 5px; border: 1px solid var(--border-color); padding: 10px; background: #EEE; }
-        .submit-btn { background-color: var(--main-green); color: white; border: none; padding: 12px; border-radius: 5px; cursor: pointer; font-weight: bold; }
+        /* 輸入框與按鈕尺寸加大 */
+        .input-group { padding: 15px 30px; display: flex; flex-direction: column; gap: 15px; }
+        input[type="text"], input[type="number"] { border-radius: 8px; border: 1px solid var(--border-color); padding: 15px; background: #EEE; font-size: 18px; }
+        .submit-btn { background-color: var(--main-green); color: white; border: none; padding: 18px; border-radius: 8px; cursor: pointer; font-weight: bold; font-size: 20px; }
 
-        .buy-list { padding: 0 20px; }
-        .buy-item { display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid var(--border-color); padding: 12px 0; }
-        input[type="checkbox"] { width: 25px; height: 25px; cursor: pointer; }
-        .del-btn { background: none; border: none; cursor: pointer; font-size: 16px; padding: 5px; }
+        /* 名字輸入框加大 */
+        .name-input { width: 100px !important; height: 35px; text-align: center; font-size: 18px; }
+
+        .list-box { padding: 0 20px; }
+        .list-item { display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid var(--border-color); padding: 15px 0; }
+        input[type="checkbox"] { width: 30px; height: 30px; cursor: pointer; }
+        .del-btn { background: none; border: none; cursor: pointer; font-size: 22px; padding: 5px; }
     </style>
 </head>
 <body>
@@ -55,13 +61,13 @@
     <div class="notice">
         <strong>必看公告</strong><br>
         • 地點：新竹尖石 自然野趣<br>
-        • <a href="https://maps.app.goo.gl/crSrAXoFqLtNZBTk7" target="_blank">點我看地圖連結</a><br>
+        • <a href="https://maps.app.goo.gl/ChIJp86ImF4VaDQR5WYs-_aUpVI" target="_blank">點我看地圖連結</a><br>
         • 時間：下午2點集合<br>
         • 收費：2000元/人 (可用Line Pay或轉帳備註人名)<br>
         • 帳號：(808) 0015977168920
     </div>
 
-    <div class="section-title">認領物品 (點擊認領)</div>
+    <div class="section-title">📦 認領物品 (點擊認領)</div>
     <div class="btn-grid">
         <div v-for="(obj, index) in options" :key="index" class="btn-item-wrapper">
             <div class="item-btn" @click="claimItem(obj)">{{ obj }}</div>
@@ -77,34 +83,51 @@
         <tbody>
             <tr v-for="(claim, index) in claims" :key="index">
                 <td>{{ claim.name }}</td>
-                <td><input v-model="claim.user" @change="save" placeholder="誰領？" style="width:60px; text-align:center;"></td>
-                <td><input v-model.number="claim.qty" @change="save" type="number" style="width:40px; text-align:center;"></td>
+                <td><input v-model="claim.user" @change="save" placeholder="誰領？" class="name-input"></td>
+                <td><input v-model.number="claim.qty" @change="save" type="number" style="width:50px; text-align:center; font-size:18px;"></td>
                 <td><button class="del-btn" @click="removeClaim(index)">❌</button></td>
             </tr>
         </tbody>
     </table>
 
-    <div class="section-title">管理：新增物品按鈕</div>
     <div class="input-group">
         <input v-model="newOption" placeholder="例如：大帳篷、卡式爐">
-        <button class="submit-btn" @click="addOption">新增到認領區</button>
+        <button class="submit-btn" @click="addOption">新增物品按鈕</button>
     </div>
 
-    <div class="section-title">採買清單</div>
-    <div class="buy-list">
-        <div v-for="(buy, i) in shoppingList" :key="i" class="buy-item">
+    <hr style="margin: 40px 0; border: 1px dashed #666;">
+
+    <div class="section-title">🍺 酒類與飲品</div>
+    <div class="list-box">
+        <div v-for="(drink, i) in drinkList" :key="i" class="list-item">
+            <div>
+                <input type="checkbox" v-model="drink.done" @change="save">
+                <span :style="drink.done ? 'text-decoration: line-through; color: #777; margin-left:15px;' : 'margin-left:15px;'">{{ drink.name }}</span>
+            </div>
+            <button class="del-btn" @click="removeDrink(i)">❌</button>
+        </div>
+    </div>
+    <div class="input-group">
+        <input v-model="newDrink" placeholder="例如：台啤一箱、可樂">
+        <button class="submit-btn" style="background-color: #8B4513;" @click="addDrink">新增飲品項目</button>
+    </div>
+
+    <hr style="margin: 40px 0; border: 1px dashed #666;">
+
+    <div class="section-title">🛒 採買清單</div>
+    <div class="list-box">
+        <div v-for="(buy, i) in shoppingList" :key="i" class="buy-item list-item">
             <div>
                 <input type="checkbox" v-model="buy.done" @change="save">
-                <span :style="buy.done ? 'text-decoration: line-through; color: #777; margin-left:10px;' : 'margin-left:10px;'">{{ buy.name }}</span>
+                <span :style="buy.done ? 'text-decoration: line-through; color: #777; margin-left:15px;' : 'margin-left:15px;'">{{ buy.name }}</span>
             </div>
             <button class="del-btn" @click="removeBuy(i)">❌</button>
         </div>
     </div>
 
-    <div class="section-title">管理：新增採買項目</div>
     <div class="input-group">
         <input v-model="newBuy" placeholder="例如：五花肉 3 斤">
-        <button class="submit-btn" @click="addBuy">新增到採買清單</button>
+        <button class="submit-btn" @click="addBuy">新增採買項目</button>
     </div>
 </div>
 
@@ -127,11 +150,13 @@
     createApp({
         data() {
             return {
-                options: [], // 讓你可以自己從網頁新增
+                options: [], 
                 claims: [],       
                 shoppingList: [], 
+                drinkList: [], 
                 newOption: '',
-                newBuy: ''
+                newBuy: '',
+                newDrink: ''
             }
         },
         methods: {
@@ -173,11 +198,25 @@
                     this.save();
                 }
             },
+            addDrink() {
+                if(this.newDrink) {
+                    this.drinkList.push({ name: this.newDrink, done: false });
+                    this.newDrink = '';
+                    this.save();
+                }
+            },
+            removeDrink(index) {
+                if(confirm("要刪除這個飲品項目嗎？")) {
+                    this.drinkList.splice(index, 1);
+                    this.save();
+                }
+            },
             save() {
                 db.ref('camping/').set({
                     options: JSON.parse(JSON.stringify(this.options)),
                     claims: JSON.parse(JSON.stringify(this.claims)),
-                    shoppingList: JSON.parse(JSON.stringify(this.shoppingList))
+                    shoppingList: JSON.parse(JSON.stringify(this.shoppingList)),
+                    drinkList: JSON.parse(JSON.stringify(this.drinkList))
                 });
             }
         },
@@ -188,6 +227,7 @@
                     this.options = data.options || [];
                     this.claims = data.claims || [];
                     this.shoppingList = data.shoppingList || [];
+                    this.drinkList = data.drinkList || [];
                 }
             });
         }
