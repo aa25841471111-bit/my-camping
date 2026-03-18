@@ -43,9 +43,9 @@
         .big-input { 
             border-radius: 10px; 
             border: 2px solid var(--main-green); 
-            padding: 20px; /* 增加內距讓框變高 */
+            padding: 20px; 
             background: #FFF; 
-            font-size: 22px; /* 字體加大 */
+            font-size: 22px; 
             width: 100%;
             box-sizing: border-box;
         }
@@ -62,9 +62,11 @@
 
         /* 勾選清單區 */
         .list-box { padding: 0 20px; }
-        .list-item { display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid var(--border-color); padding: 15px 0; }
-        input[type="checkbox"] { width: 30px; height: 30px; cursor: pointer; }
+        .list-item { display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid var(--border-color); padding: 12px 0; }
+        input[type="checkbox"] { width: 28px; height: 28px; cursor: pointer; }
         .del-btn { background: none; border: none; cursor: pointer; font-size: 22px; padding: 5px; }
+
+        .paid-status { font-size: 14px; color: #2D5A27; font-weight: bold; }
     </style>
 </head>
 <body>
@@ -83,6 +85,22 @@
         • 收費：2000元/人 (可用Line Pay或轉帳備註人名)<br>
         • 帳號：(808) 0015977168920
     </div>
+
+    <div class="section-title">👥 參與人員與繳費狀態</div>
+    <div class="list-box">
+        <div v-for="(person, i) in memberList" :key="i" class="list-item">
+            <div style="display: flex; align-items: center;">
+                <input type="checkbox" v-model="person.paid" @change="save">
+                <div style="margin-left: 15px;">
+                    <span :style="person.paid ? 'color: #2D5A27; font-weight: bold;' : ''">{{ person.name }}</span>
+                    <span v-if="person.paid" class="paid-status" style="margin-left: 10px;">(已繳費 ✓)</span>
+                </div>
+            </div>
+            <button class="del-btn" @click="removeMember(i)" style="font-size: 16px; color: #999;">✕</button>
+        </div>
+    </div>
+
+    <hr style="margin: 40px 0; border: 1px dashed #666;">
 
     <div class="section-title">📦 認領物品 (點擊認領)</div>
     <div class="btn-grid">
@@ -162,11 +180,14 @@
     firebase.initializeApp(firebaseConfig);
     const db = firebase.database();
 
+    const initialMembers = ["彭", "小茵", "北極", "小晴", "文元", "小惠", "安德", "洪", "豆豆", "kiki", "豆哥", "Louis", "米其林", "米其林女友", "家銘", "莊"];
+
     const { createApp } = Vue;
     createApp({
         data() {
             return {
                 options: [], claims: [], shoppingList: [], drinkList: [],
+                memberList: [],
                 newOption: '', newBuy: '', newDrink: ''
             }
         },
@@ -199,23 +220,38 @@
             removeDrink(index) {
                 if(confirm("要刪除這個飲品項目嗎？")) { this.drinkList.splice(index, 1); this.save(); }
             },
+            removeMember(index) {
+                if(confirm("要移除這位參與人員嗎？")) { this.memberList.splice(index, 1); this.save(); }
+            },
             save() {
                 db.ref('camping/').set({
                     options: JSON.parse(JSON.stringify(this.options)),
                     claims: JSON.parse(JSON.stringify(this.claims)),
                     shoppingList: JSON.parse(JSON.stringify(this.shoppingList)),
-                    drinkList: JSON.parse(JSON.stringify(this.drinkList))
+                    drinkList: JSON.parse(JSON.stringify(this.drinkList)),
+                    memberList: JSON.parse(JSON.stringify(this.memberList))
                 });
             }
         },
         mounted() {
             db.ref('camping/').on('value', (snapshot) => {
                 const data = snapshot.val();
-                if (data) {
+                if (data && data.memberList && data.memberList.length > 0) {
                     this.options = data.options || [];
                     this.claims = data.claims || [];
                     this.shoppingList = data.shoppingList || [];
                     this.drinkList = data.drinkList || [];
+                    this.memberList = data.memberList;
+                } else {
+                    // 如果資料庫沒資料，則載入初始名單
+                    this.memberList = initialMembers.map(name => ({ name: name, paid: false }));
+                    if (data) {
+                        this.options = data.options || [];
+                        this.claims = data.claims || [];
+                        this.shoppingList = data.shoppingList || [];
+                        this.drinkList = data.drinkList || [];
+                    }
+                    this.save();
                 }
             });
         }
