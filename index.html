@@ -13,7 +13,6 @@
             --main-green: #5B6356;
             --btn-gray: #A1A9AF;
             --border-color: #999;
-            /* 全部文字比原本大 4pt，約等於增加 5-6px */
             --base-font-size: 20px; 
         }
         body { margin: 0; background-color: var(--bg-color); font-family: sans-serif; display: flex; justify-content: center; font-size: var(--base-font-size); }
@@ -28,22 +27,40 @@
 
         .section-title { padding: 25px 20px 10px; font-size: 24px; font-weight: bold; }
 
+        /* 認領按鈕區 */
         .btn-grid { display: flex; flex-direction: column; gap: 12px; padding: 0 30px; }
         .btn-item-wrapper { display: flex; align-items: center; gap: 12px; }
         .item-btn { flex-grow: 1; background-color: var(--btn-gray); border: 1px solid #888; border-radius: 25px; padding: 15px; color: #333; cursor: pointer; text-align: center; font-weight: bold; font-size: 20px; }
         .del-opt { cursor: pointer; color: #777; font-size: 18px; padding: 5px; }
 
-        table { width: 95%; margin: 15px auto; border-collapse: collapse; background: rgba(255,255,255,0.2); }
-        th, td { border: 1px solid var(--border-color); padding: 12px; text-align: center; font-size: 18px; }
+        /* 認領清單表格：尺寸縮小 */
+        table { width: 95%; margin: 10px auto; border-collapse: collapse; background: rgba(255,255,255,0.2); }
+        th, td { border: 1px solid var(--border-color); padding: 8px; text-align: center; font-size: 16px; }
+        .name-input { width: 90px !important; height: 30px; text-align: center; font-size: 16px; border: 1px solid #ccc; border-radius: 4px; }
 
-        /* 輸入框與按鈕尺寸加大 */
-        .input-group { padding: 15px 30px; display: flex; flex-direction: column; gap: 15px; }
-        input[type="text"], input[type="number"] { border-radius: 8px; border: 1px solid var(--border-color); padding: 15px; background: #EEE; font-size: 18px; }
-        .submit-btn { background-color: var(--main-green); color: white; border: none; padding: 18px; border-radius: 8px; cursor: pointer; font-weight: bold; font-size: 20px; }
+        /* 加大的文字輸入框與按鈕 */
+        .input-group { padding: 15px 30px; display: flex; flex-direction: column; gap: 12px; }
+        .big-input { 
+            border-radius: 10px; 
+            border: 2px solid var(--main-green); 
+            padding: 20px; /* 增加內距讓框變高 */
+            background: #FFF; 
+            font-size: 22px; /* 字體加大 */
+            width: 100%;
+            box-sizing: border-box;
+        }
+        .submit-btn { 
+            background-color: var(--main-green); 
+            color: white; 
+            border: none; 
+            padding: 18px; 
+            border-radius: 10px; 
+            cursor: pointer; 
+            font-weight: bold; 
+            font-size: 22px; 
+        }
 
-        /* 名字輸入框加大 */
-        .name-input { width: 100px !important; height: 35px; text-align: center; font-size: 18px; }
-
+        /* 勾選清單區 */
         .list-box { padding: 0 20px; }
         .list-item { display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid var(--border-color); padding: 15px 0; }
         input[type="checkbox"] { width: 30px; height: 30px; cursor: pointer; }
@@ -75,24 +92,24 @@
         </div>
     </div>
 
-    <div class="section-title">認領清單</div>
+    <div class="section-title">📝 認領清單 (細項)</div>
     <table>
         <thead>
-            <tr><th>物品</th><th>名字</th><th>數量</th><th></th></tr>
+            <tr><th>物品</th><th>誰領？</th><th>量</th><th></th></tr>
         </thead>
         <tbody>
             <tr v-for="(claim, index) in claims" :key="index">
                 <td>{{ claim.name }}</td>
-                <td><input v-model="claim.user" @change="save" placeholder="誰領？" class="name-input"></td>
-                <td><input v-model.number="claim.qty" @change="save" type="number" style="width:50px; text-align:center; font-size:18px;"></td>
+                <td><input v-model="claim.user" @change="save" class="name-input"></td>
+                <td><input v-model.number="claim.qty" @change="save" type="number" style="width:45px; text-align:center;"></td>
                 <td><button class="del-btn" @click="removeClaim(index)">❌</button></td>
             </tr>
         </tbody>
     </table>
 
     <div class="input-group">
-        <input v-model="newOption" placeholder="例如：大帳篷、卡式爐">
-        <button class="submit-btn" @click="addOption">新增物品按鈕</button>
+        <input v-model="newOption" class="big-input" placeholder="新增認領項目按鈕">
+        <button class="submit-btn" @click="addOption">確認新增按鈕</button>
     </div>
 
     <hr style="margin: 40px 0; border: 1px dashed #666;">
@@ -108,8 +125,8 @@
         </div>
     </div>
     <div class="input-group">
-        <input v-model="newDrink" placeholder="例如：台啤一箱、可樂">
-        <button class="submit-btn" style="background-color: #8B4513;" @click="addDrink">新增飲品項目</button>
+        <input v-model="newDrink" class="big-input" placeholder="輸入酒水：如 啤酒">
+        <button class="submit-btn" style="background-color: #8B4513;" @click="addDrink">確認新增飲品</button>
     </div>
 
     <hr style="margin: 40px 0; border: 1px dashed #666;">
@@ -124,10 +141,9 @@
             <button class="del-btn" @click="removeBuy(i)">❌</button>
         </div>
     </div>
-
     <div class="input-group">
-        <input v-model="newBuy" placeholder="例如：五花肉 3 斤">
-        <button class="submit-btn" @click="addBuy">新增採買項目</button>
+        <input v-model="newBuy" class="big-input" placeholder="輸入採買：如 豬肉">
+        <button class="submit-btn" @click="addBuy">確認新增採買</button>
     </div>
 </div>
 
@@ -150,13 +166,8 @@
     createApp({
         data() {
             return {
-                options: [], 
-                claims: [],       
-                shoppingList: [], 
-                drinkList: [], 
-                newOption: '',
-                newBuy: '',
-                newDrink: ''
+                options: [], claims: [], shoppingList: [], drinkList: [],
+                newOption: '', newBuy: '', newDrink: ''
             }
         },
         methods: {
@@ -166,50 +177,27 @@
             },
             addOption() {
                 if(this.newOption) { 
-                    if(!this.options.includes(this.newOption)) {
-                        this.options.push(this.newOption); 
-                    }
-                    this.newOption = ''; 
-                    this.save(); 
+                    if(!this.options.includes(this.newOption)) { this.options.push(this.newOption); }
+                    this.newOption = ''; this.save(); 
                 }
             },
             removeOption(index) {
-                if(confirm("要刪除這個物品按鈕嗎？")) {
-                    this.options.splice(index, 1);
-                    this.save();
-                }
+                if(confirm("要刪除這個物品按鈕嗎？")) { this.options.splice(index, 1); this.save(); }
             },
             removeClaim(index) {
-                if(confirm("要刪除這筆認領紀錄嗎？")) {
-                    this.claims.splice(index, 1);
-                    this.save();
-                }
+                if(confirm("要刪除這筆認領紀錄嗎？")) { this.claims.splice(index, 1); this.save(); }
             },
             addBuy() {
-                if(this.newBuy) { 
-                    this.shoppingList.push({ name: this.newBuy, done: false }); 
-                    this.newBuy = ''; 
-                    this.save(); 
-                }
+                if(this.newBuy) { this.shoppingList.push({ name: this.newBuy, done: false }); this.newBuy = ''; this.save(); }
             },
             removeBuy(index) {
-                if(confirm("要從採買清單刪除嗎？")) {
-                    this.shoppingList.splice(index, 1);
-                    this.save();
-                }
+                if(confirm("要從採買清單刪除嗎？")) { this.shoppingList.splice(index, 1); this.save(); }
             },
             addDrink() {
-                if(this.newDrink) {
-                    this.drinkList.push({ name: this.newDrink, done: false });
-                    this.newDrink = '';
-                    this.save();
-                }
+                if(this.newDrink) { this.drinkList.push({ name: this.newDrink, done: false }); this.newDrink = ''; this.save(); }
             },
             removeDrink(index) {
-                if(confirm("要刪除這個飲品項目嗎？")) {
-                    this.drinkList.splice(index, 1);
-                    this.save();
-                }
+                if(confirm("要刪除這個飲品項目嗎？")) { this.drinkList.splice(index, 1); this.save(); }
             },
             save() {
                 db.ref('camping/').set({
