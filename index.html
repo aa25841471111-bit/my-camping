@@ -14,6 +14,8 @@
             --btn-gray: #A1A9AF;
             --border-color: #999;
             --base-font-size: 20px; 
+            --jiaming-blue: #2E5266; /* 家銘車深藍色 */
+            --arctic-dark: #435058;  /* 北極車深灰色 */
         }
         body { margin: 0; background-color: var(--bg-color); font-family: sans-serif; display: flex; justify-content: center; font-size: var(--base-font-size); }
         #app { width: 100%; max-width: 500px; padding-bottom: 50px; }
@@ -27,40 +29,25 @@
 
         .section-title { padding: 25px 20px 10px; font-size: 24px; font-weight: bold; }
 
+        /* 車輛專屬標題樣式 */
+        .car-header { color: white; margin: 20px 10px 10px; padding: 12px 20px; border-radius: 8px; font-size: 22px; font-weight: bold; }
+        .bg-jiaming { background-color: var(--jiaming-blue); }
+        .bg-arctic { background-color: var(--arctic-dark); }
+
         /* 認領按鈕區 */
         .btn-grid { display: flex; flex-direction: column; gap: 12px; padding: 0 30px; }
         .btn-item-wrapper { display: flex; align-items: center; gap: 12px; }
         .item-btn { flex-grow: 1; background-color: var(--btn-gray); border: 1px solid #888; border-radius: 25px; padding: 15px; color: #333; cursor: pointer; text-align: center; font-weight: bold; font-size: 20px; }
         .del-opt { cursor: pointer; color: #777; font-size: 18px; padding: 5px; }
 
-        /* 認領清單表格：尺寸縮小 */
         table { width: 95%; margin: 10px auto; border-collapse: collapse; background: rgba(255,255,255,0.2); }
         th, td { border: 1px solid var(--border-color); padding: 8px; text-align: center; font-size: 16px; }
         .name-input { width: 90px !important; height: 30px; text-align: center; font-size: 16px; border: 1px solid #ccc; border-radius: 4px; }
 
-        /* 加大的文字輸入框與按鈕 */
         .input-group { padding: 15px 30px; display: flex; flex-direction: column; gap: 12px; }
-        .big-input { 
-            border-radius: 10px; 
-            border: 2px solid var(--main-green); 
-            padding: 20px; 
-            background: #FFF; 
-            font-size: 22px; 
-            width: 100%;
-            box-sizing: border-box;
-        }
-        .submit-btn { 
-            background-color: var(--main-green); 
-            color: white; 
-            border: none; 
-            padding: 18px; 
-            border-radius: 10px; 
-            cursor: pointer; 
-            font-weight: bold; 
-            font-size: 22px; 
-        }
+        .big-input { border-radius: 10px; border: 2px solid var(--main-green); padding: 20px; background: #FFF; font-size: 22px; width: 100%; box-sizing: border-box; }
+        .submit-btn { background-color: var(--main-green); color: white; border: none; padding: 18px; border-radius: 10px; cursor: pointer; font-weight: bold; font-size: 22px; }
 
-        /* 勾選清單區 */
         .list-box { padding: 0 20px; }
         .list-item { display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid var(--border-color); padding: 12px 0; }
         input[type="checkbox"] { width: 28px; height: 28px; cursor: pointer; }
@@ -149,19 +136,36 @@
 
     <hr style="margin: 40px 0; border: 1px dashed #666;">
 
-    <div class="section-title">🛒 採買清單</div>
+    <div class="car-header bg-jiaming">🛒 採買清單 (家銘車)</div>
     <div class="list-box">
-        <div v-for="(buy, i) in shoppingList" :key="i" class="buy-item list-item">
+        <div v-for="(buy, i) in jiamingList" :key="i" class="list-item">
             <div>
                 <input type="checkbox" v-model="buy.done" @change="save">
                 <span :style="buy.done ? 'text-decoration: line-through; color: #777; margin-left:15px;' : 'margin-left:15px;'">{{ buy.name }}</span>
             </div>
-            <button class="del-btn" @click="removeBuy(i)">❌</button>
+            <button class="del-btn" @click="removeJiaming(i)">❌</button>
         </div>
     </div>
     <div class="input-group">
-        <input v-model="newBuy" class="big-input" placeholder="輸入採買：如 豬肉">
-        <button class="submit-btn" @click="addBuy">確認新增採買</button>
+        <input v-model="newJiaming" class="big-input" placeholder="家銘車要買什麼？">
+        <button class="submit-btn" style="background-color: var(--jiaming-blue);" @click="addJiaming">加入家銘車清單</button>
+    </div>
+
+    <hr style="margin: 20px 0; border: none;">
+
+    <div class="car-header bg-arctic">🛒 採買清單 (北極車)</div>
+    <div class="list-box">
+        <div v-for="(buy, i) in arcticList" :key="i" class="list-item">
+            <div>
+                <input type="checkbox" v-model="buy.done" @change="save">
+                <span :style="buy.done ? 'text-decoration: line-through; color: #777; margin-left:15px;' : 'margin-left:15px;'">{{ buy.name }}</span>
+            </div>
+            <button class="del-btn" @click="removeArctic(i)">❌</button>
+        </div>
+    </div>
+    <div class="input-group">
+        <input v-model="newArctic" class="big-input" placeholder="北極車要買什麼？">
+        <button class="submit-btn" style="background-color: var(--arctic-dark);" @click="addArctic">加入北極車清單</button>
     </div>
 </div>
 
@@ -186,9 +190,10 @@
     createApp({
         data() {
             return {
-                options: [], claims: [], shoppingList: [], drinkList: [],
+                options: [], claims: [], drinkList: [],
                 memberList: [],
-                newOption: '', newBuy: '', newDrink: ''
+                jiamingList: [], arcticList: [], // 兩車清單
+                newOption: '', newDrink: '', newJiaming: '', newArctic: ''
             }
         },
         methods: {
@@ -208,17 +213,25 @@
             removeClaim(index) {
                 if(confirm("要刪除這筆認領紀錄嗎？")) { this.claims.splice(index, 1); this.save(); }
             },
-            addBuy() {
-                if(this.newBuy) { this.shoppingList.push({ name: this.newBuy, done: false }); this.newBuy = ''; this.save(); }
-            },
-            removeBuy(index) {
-                if(confirm("要從採買清單刪除嗎？")) { this.shoppingList.splice(index, 1); this.save(); }
-            },
             addDrink() {
                 if(this.newDrink) { this.drinkList.push({ name: this.newDrink, done: false }); this.newDrink = ''; this.save(); }
             },
             removeDrink(index) {
                 if(confirm("要刪除這個飲品項目嗎？")) { this.drinkList.splice(index, 1); this.save(); }
+            },
+            // 家銘車方法
+            addJiaming() {
+                if(this.newJiaming) { this.jiamingList.push({ name: this.newJiaming, done: false }); this.newJiaming = ''; this.save(); }
+            },
+            removeJiaming(index) {
+                if(confirm("要從家銘車清單刪除嗎？")) { this.jiamingList.splice(index, 1); this.save(); }
+            },
+            // 北極車方法
+            addArctic() {
+                if(this.newArctic) { this.arcticList.push({ name: this.newArctic, done: false }); this.newArctic = ''; this.save(); }
+            },
+            removeArctic(index) {
+                if(confirm("要從北極車清單刪除嗎？")) { this.arcticList.splice(index, 1); this.save(); }
             },
             removeMember(index) {
                 if(confirm("要移除這位參與人員嗎？")) { this.memberList.splice(index, 1); this.save(); }
@@ -227,30 +240,30 @@
                 db.ref('camping/').set({
                     options: JSON.parse(JSON.stringify(this.options)),
                     claims: JSON.parse(JSON.stringify(this.claims)),
-                    shoppingList: JSON.parse(JSON.stringify(this.shoppingList)),
                     drinkList: JSON.parse(JSON.stringify(this.drinkList)),
-                    memberList: JSON.parse(JSON.stringify(this.memberList))
+                    memberList: JSON.parse(JSON.stringify(this.memberList)),
+                    jiamingList: JSON.parse(JSON.stringify(this.jiamingList)),
+                    arcticList: JSON.parse(JSON.stringify(this.arcticList))
                 });
             }
         },
         mounted() {
             db.ref('camping/').on('value', (snapshot) => {
                 const data = snapshot.val();
-                if (data && data.memberList && data.memberList.length > 0) {
+                if (data) {
                     this.options = data.options || [];
                     this.claims = data.claims || [];
-                    this.shoppingList = data.shoppingList || [];
                     this.drinkList = data.drinkList || [];
-                    this.memberList = data.memberList;
-                } else {
-                    // 如果資料庫沒資料，則載入初始名單
-                    this.memberList = initialMembers.map(name => ({ name: name, paid: false }));
-                    if (data) {
-                        this.options = data.options || [];
-                        this.claims = data.claims || [];
-                        this.shoppingList = data.shoppingList || [];
-                        this.drinkList = data.drinkList || [];
+                    this.jiamingList = data.jiamingList || [];
+                    this.arcticList = data.arcticList || [];
+                    if (data.memberList && data.memberList.length > 0) {
+                        this.memberList = data.memberList;
+                    } else {
+                        this.memberList = initialMembers.map(name => ({ name: name, paid: false }));
+                        this.save();
                     }
+                } else {
+                    this.memberList = initialMembers.map(name => ({ name: name, paid: false }));
                     this.save();
                 }
             });
