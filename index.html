@@ -14,8 +14,8 @@
             --btn-gray: #A1A9AF;
             --border-color: #999;
             --base-font-size: 20px; 
-            --jiaming-blue: #2E5266; /* 家銘車深藍色 */
-            --arctic-dark: #435058;  /* 北極車深灰色 */
+            --jiaming-blue: #2E5266;
+            --arctic-dark: #435058;
         }
         body { margin: 0; background-color: var(--bg-color); font-family: sans-serif; display: flex; justify-content: center; font-size: var(--base-font-size); }
         #app { width: 100%; max-width: 500px; padding-bottom: 50px; }
@@ -28,13 +28,11 @@
         .notice a { color: #2D5A27; text-decoration: underline; font-weight: bold; }
 
         .section-title { padding: 25px 20px 10px; font-size: 24px; font-weight: bold; }
-
-        /* 車輛專屬標題樣式 */
+        
         .car-header { color: white; margin: 20px 10px 10px; padding: 12px 20px; border-radius: 8px; font-size: 22px; font-weight: bold; }
         .bg-jiaming { background-color: var(--jiaming-blue); }
         .bg-arctic { background-color: var(--arctic-dark); }
 
-        /* 認領按鈕區 */
         .btn-grid { display: flex; flex-direction: column; gap: 12px; padding: 0 30px; }
         .btn-item-wrapper { display: flex; align-items: center; gap: 12px; }
         .item-btn { flex-grow: 1; background-color: var(--btn-gray); border: 1px solid #888; border-radius: 25px; padding: 15px; color: #333; cursor: pointer; text-align: center; font-weight: bold; font-size: 20px; }
@@ -192,7 +190,7 @@
             return {
                 options: [], claims: [], drinkList: [],
                 memberList: [],
-                jiamingList: [], arcticList: [], // 兩車清單
+                jiamingList: [], arcticList: [],
                 newOption: '', newDrink: '', newJiaming: '', newArctic: ''
             }
         },
@@ -219,14 +217,12 @@
             removeDrink(index) {
                 if(confirm("要刪除這個飲品項目嗎？")) { this.drinkList.splice(index, 1); this.save(); }
             },
-            // 家銘車方法
             addJiaming() {
                 if(this.newJiaming) { this.jiamingList.push({ name: this.newJiaming, done: false }); this.newJiaming = ''; this.save(); }
             },
             removeJiaming(index) {
                 if(confirm("要從家銘車清單刪除嗎？")) { this.jiamingList.splice(index, 1); this.save(); }
             },
-            // 北極車方法
             addArctic() {
                 if(this.newArctic) { this.arcticList.push({ name: this.newArctic, done: false }); this.newArctic = ''; this.save(); }
             },
@@ -254,17 +250,22 @@
                     this.options = data.options || [];
                     this.claims = data.claims || [];
                     this.drinkList = data.drinkList || [];
-                    this.jiamingList = data.jiamingList || [];
+                    
+                    // 關鍵修正：如果 jiamingList 是空的，但 shoppingList (舊欄位) 有資料，就搬移過來
+                    if ((!data.jiamingList || data.jiamingList.length === 0) && data.shoppingList) {
+                        this.jiamingList = data.shoppingList;
+                    } else {
+                        this.jiamingList = data.jiamingList || [];
+                    }
+                    
                     this.arcticList = data.arcticList || [];
+                    
                     if (data.memberList && data.memberList.length > 0) {
                         this.memberList = data.memberList;
                     } else {
                         this.memberList = initialMembers.map(name => ({ name: name, paid: false }));
                         this.save();
                     }
-                } else {
-                    this.memberList = initialMembers.map(name => ({ name: name, paid: false }));
-                    this.save();
                 }
             });
         }
